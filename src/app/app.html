@@ -71,7 +71,7 @@
             @for (request of requests.controls; track request; let i = $index) {
               <div class="request-row" [formGroupName]="i">
                 <div class="field"><label [for]="'item-' + i">Accesorio <span class="required-symbol">*</span></label><select [id]="'item-' + i" formControlName="item"><option value="" disabled>Selecciona un accesorio</option>@for (accessory of accessories; track accessory.value) { <option [value]="accessory.value">{{ accessory.label }}</option> }</select></div>
-                <div class="field"><label [for]="'request-' + i">Quiero <span class="required-symbol">*</span></label><select [id]="'request-' + i" formControlName="request"><option value="" disabled>Selecciona una opción</option><option value="Buy">Comprar</option><option value="Borrow">Pedir prestado</option><option value="Advice">Pedir asesoramiento</option></select></div>
+                <div class="field"><label [for]="'request-' + i">Quiero <span class="required-symbol">*</span></label><select [id]="'request-' + i" formControlName="request"><option value="" disabled>Selecciona</option><option value="Buy">Comprar</option><option value="Borrow">Pedir prestado</option><option value="Advice">Pedir asesoramiento</option></select></div>
                 <div class="field quantity-field"><label [for]="'quantity-' + i">Cantidad</label><input [id]="'quantity-' + i" type="number" formControlName="quantity" min="1" max="20" /></div>
                 <button type="button" class="remove-button" (click)="removeRequest(i)" [attr.aria-label]="'Quitar accesorio ' + (i + 1)">×</button>
                 @if (request.touched && request.invalid) { <small class="field-error row-error">Completa este accesorio e indica una cantidad entre 1 y 20.</small> }
