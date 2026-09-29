@@ -1,0 +1,106 @@
+<header class="site-header">
+  <div class="brand-mark" aria-hidden="true">B<span>·</span>F</div>
+  <div class="brand-copy"><strong>Bassoon Festival</strong><span>Pre-arrival check</span></div>
+  <div class="header-note">For participating students</div>
+</header>
+
+<main class="page-shell">
+  <aside class="intro-panel">
+    <div class="eyebrow"><span></span> BEFORE WE MEET</div>
+    <h1>Tell us what you need to <em>play comfortably.</em></h1>
+    <p>Let us know about accessories you need and any trouble with your bassoon. Your answers help us prepare for your arrival.</p>
+    <div class="intro-details">
+      <div><b>01</b> About your bassoon</div>
+      <div><b>02</b> Accessories</div>
+      <div><b>03</b> Instrument check</div>
+    </div>
+    <p class="privacy-note">Describe symptoms rather than attempting a diagnosis. We use your contact details to prepare and follow up about your festival needs.</p>
+  </aside>
+
+  <section class="form-panel" aria-labelledby="form-title">
+    @if (status() === 'success') {
+      <div class="success-card" role="status">
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <p class="section-kicker">RESPONSE RECEIVED</p>
+        <h2>Thank you. See you at the festival.</h2>
+        <p>We’ll review what you need and contact you if a follow-up is useful.</p>
+        <button type="button" class="secondary-button" (click)="status.set('idle')">Send another response</button>
+      </div>
+    } @else {
+      <div class="form-heading">
+        <p class="section-kicker">STUDENT FORM · ABOUT 3 MINUTES</p>
+        <h2 id="form-title">Equipment & instrument check</h2>
+        <p>Fields marked <span class="required-symbol">*</span> are required.</p>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <section class="form-section" aria-labelledby="about-title">
+          <div class="section-title"><span>01</span><h3 id="about-title">About you and your bassoon</h3></div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="student-name">Your name <span class="required-symbol">*</span></label>
+              <input id="student-name" type="text" formControlName="name" autocomplete="name" maxlength="120" [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid" />
+              @if (form.controls.name.touched && form.controls.name.invalid) { <small class="field-error">Please enter your name.</small> }
+            </div>
+            <div class="field">
+              <label for="student-email">Email <span class="required-symbol">*</span></label>
+              <input id="student-email" type="email" formControlName="email" autocomplete="email" maxlength="254" [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid" />
+              @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Please enter a valid email address.</small> }
+            </div>
+            <div class="field">
+              <label for="bassoon-system">Bassoon system <span class="required-symbol">*</span></label>
+              <select id="bassoon-system" formControlName="system" [attr.aria-invalid]="form.controls.system.touched && form.controls.system.invalid">
+                <option value="" disabled>Select a system</option><option value="German">German (Heckel)</option><option value="French">French (Buffet)</option><option value="Unsure">I’m not sure</option>
+              </select>
+              @if (form.controls.system.touched && form.controls.system.invalid) { <small class="field-error">Please select an option.</small> }
+            </div>
+            <div class="field">
+              <label for="ownership">Instrument <span class="required-symbol">*</span></label>
+              <select id="ownership" formControlName="ownership" [attr.aria-invalid]="form.controls.ownership.touched && form.controls.ownership.invalid">
+                <option value="" disabled>Select an option</option><option value="Own">I own it</option><option value="Borrowed">I borrow it</option><option value="School">It belongs to my school</option><option value="Other">Other</option>
+              </select>
+              @if (form.controls.ownership.touched && form.controls.ownership.invalid) { <small class="field-error">Please select an option.</small> }
+            </div>
+          </div>
+          <div class="field field-full"><label for="instrument-model">Make and model <span class="optional">Optional</span></label><input id="instrument-model" type="text" formControlName="instrumentModel" maxlength="160" placeholder="For example, Fox Renard 222" /></div>
+        </section>
+
+        <section class="form-section" aria-labelledby="accessories-title">
+          <div class="section-title"><span>02</span><h3 id="accessories-title">Accessories you need</h3></div>
+          <p class="section-help">Add each item you want to buy, borrow during the festival, or ask about. Leave this section empty if you need nothing.</p>
+          <div formArrayName="accessoryRequests" class="request-list">
+            @for (request of requests.controls; track request; let i = $index) {
+              <div class="request-row" [formGroupName]="i">
+                <div class="field"><label [for]="'item-' + i">Item <span class="required-symbol">*</span></label><select [id]="'item-' + i" formControlName="item"><option value="" disabled>Select an item</option>@for (accessory of accessories; track accessory) { <option [value]="accessory">{{ accessory }}</option> }</select></div>
+                <div class="field"><label [for]="'request-' + i">I’d like to <span class="required-symbol">*</span></label><select [id]="'request-' + i" formControlName="request"><option value="" disabled>Select</option><option value="Buy">Buy</option><option value="Borrow">Borrow</option><option value="Advice">Get advice</option></select></div>
+                <div class="field quantity-field"><label [for]="'quantity-' + i">Quantity</label><input [id]="'quantity-' + i" type="number" formControlName="quantity" min="1" max="20" /></div>
+                <button type="button" class="remove-button" (click)="removeRequest(i)" [attr.aria-label]="'Remove accessory ' + (i + 1)">×</button>
+                @if (request.touched && request.invalid) { <small class="field-error row-error">Complete this item and use a quantity from 1 to 20.</small> }
+              </div>
+            }
+          </div>
+          <button type="button" class="add-button" (click)="addRequest()" [disabled]="requests.length >= 12"><span aria-hidden="true">＋</span> Add an accessory</button>
+          <div class="field field-full"><label for="accessory-details">Exact specifications or other item <span class="optional">Optional</span></label><textarea id="accessory-details" formControlName="accessoryDetails" rows="2" maxlength="500" placeholder="For example: two medium reeds; a seat strap with cup fitting."></textarea></div>
+        </section>
+
+        <section class="form-section" aria-labelledby="instrument-title">
+          <div class="section-title"><span>03</span><h3 id="instrument-title">Instrument check</h3></div>
+          <fieldset class="issue-fieldset"><legend>Is anything causing trouble? <span class="optional">Select all that apply</span></legend>
+            <div class="issue-grid">@for (issue of issues; track issue) { <label class="check-option"><input type="checkbox" [checked]="selectedIssues().includes(issue)" (change)="toggleIssue(issue, $event)" /><span>{{ issue }}</span></label> }</div>
+          </fieldset>
+          <div class="field field-full"><label for="issue-description">What happens? Which notes or situations are affected? <span class="optional">Optional</span></label><textarea id="issue-description" formControlName="issueDescription" rows="4" maxlength="2000" placeholder="For example: low notes are difficult to start; the A key sticks after playing for a while."></textarea></div>
+          <fieldset class="playability-fieldset"><legend>Can you currently play a full lesson on this bassoon? <span class="required-symbol">*</span></legend>
+            <div class="radio-row"><label><input type="radio" formControlName="playability" value="Yes" /> Yes</label><label><input type="radio" formControlName="playability" value="With difficulty" /> With difficulty</label><label><input type="radio" formControlName="playability" value="No" /> No</label></div>
+            @if (form.controls.playability.touched && form.controls.playability.invalid) { <small class="field-error">Please select an option.</small> }
+          </fieldset>
+        </section>
+        <div class="submit-area">
+          @if (message()) { <p class="form-message" role="alert">{{ message() }}</p> }
+          @if (!configured) { <p class="draft-badge">Draft preview · submissions are not yet connected</p> }
+          <button class="submit-button" type="submit" [disabled]="status() === 'sending'">{{ status() === 'sending' ? 'Sending…' : 'Send my answers' }}</button>
+          <p>We may contact you about an item or instrument problem before the festival.</p>
+        </div>
+      </form>
+    }
+  </section>
+</main>
+<footer class="site-footer"><span>Bassoon Festival · Pre-arrival check</span><span>Prepared for the music, before we meet.</span></footer>
