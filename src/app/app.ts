@@ -10,24 +10,24 @@ type AccessoryRequest = FormGroup<{
 }>;
 
 const ACCESSORIES = [
-  { value: 'Reeds', label: 'Cañas' },
-  { value: 'Reed case', label: 'Estuche para cañas' },
-  { value: 'Seat strap', label: 'Correa de asiento' },
-  { value: 'Neck strap or harness', label: 'Correa de cuello o arnés' },
-  { value: 'Hand rest', label: 'Apoyamano' },
-  { value: 'Cleaning swab', label: 'Paño de limpieza' },
-  { value: 'Bocal', label: 'Tudel (bocal)' },
-  { value: 'Reed-making supplies', label: 'Material para fabricar cañas' },
-  { value: 'Other', label: 'Otro accesorio' },
+  { value: 'Cañas', label: 'Cañas' },
+  { value: 'Estuche para cañas', label: 'Estuche para cañas' },
+  { value: 'Correa de asiento', label: 'Correa de asiento' },
+  { value: 'Correa de cuello o arnés', label: 'Correa de cuello o arnés' },
+  { value: 'Apoyamano', label: 'Apoyamano' },
+  { value: 'Paño de limpieza', label: 'Paño de limpieza' },
+  { value: 'Tudel (bocal)', label: 'Tudel (bocal)' },
+  { value: 'Material para fabricar cañas', label: 'Material para fabricar cañas' },
+  { value: 'Otro accesorio', label: 'Otro accesorio' },
 ];
 const ISSUES = [
-  { value: 'Notes do not speak', label: 'Hay notas que no responden' },
-  { value: 'Unusual resistance or suspected leak', label: 'Resistencia inusual o posible fuga de aire' },
-  { value: 'Sticking or noisy keys', label: 'Llaves que se atascan o hacen ruido' },
-  { value: 'Loose joint', label: 'Unión floja' },
-  { value: 'Bocal or reed fit', label: 'Encaje del tudel o la caña' },
-  { value: 'Visible damage', label: 'Daños visibles' },
-  { value: 'Other', label: 'Otro problema' },
+  { value: 'Hay notas que no responden', label: 'Hay notas que no responden' },
+  { value: 'Resistencia inusual o posible fuga de aire', label: 'Resistencia inusual o posible fuga de aire' },
+  { value: 'Llaves que se atascan o hacen ruido', label: 'Llaves que se atascan o hacen ruido' },
+  { value: 'Unión floja', label: 'Unión floja' },
+  { value: 'Encaje del tudel o la caña', label: 'Encaje del tudel o la caña' },
+  { value: 'Daños visibles', label: 'Daños visibles' },
+  { value: 'Otro problema', label: 'Otro problema' },
 ];
 
 @Component({

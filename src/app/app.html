@@ -49,14 +49,14 @@
             <div class="field">
               <label for="bassoon-system">Sistema del fagot <span class="required-symbol">*</span></label>
               <select id="bassoon-system" formControlName="system" [attr.aria-invalid]="form.controls.system.touched && form.controls.system.invalid">
-                <option value="" disabled>Selecciona un sistema</option><option value="German">Alemán (Heckel)</option><option value="French">Francés (Buffet)</option><option value="Unsure">No lo sé</option>
+                <option value="" disabled>Selecciona un sistema</option><option value="Alemán (Heckel)">Alemán (Heckel)</option><option value="Francés (Buffet)">Francés (Buffet)</option><option value="No lo sé">No lo sé</option>
               </select>
               @if (form.controls.system.touched && form.controls.system.invalid) { <small class="field-error">Selecciona una opción.</small> }
             </div>
             <div class="field">
               <label for="ownership">Tu instrumento <span class="required-symbol">*</span></label>
               <select id="ownership" formControlName="ownership" [attr.aria-invalid]="form.controls.ownership.touched && form.controls.ownership.invalid">
-                <option value="" disabled>Selecciona una opción</option><option value="Own">Es mío</option><option value="Borrowed">Me lo han prestado</option><option value="School">Es de mi escuela o conservatorio</option><option value="Other">Otro caso</option>
+                <option value="" disabled>Selecciona una opción</option><option value="Es mío">Es mío</option><option value="Me lo han prestado">Me lo han prestado</option><option value="Es de mi escuela o conservatorio">Es de mi escuela o conservatorio</option><option value="Otro caso">Otro caso</option>
               </select>
               @if (form.controls.ownership.touched && form.controls.ownership.invalid) { <small class="field-error">Selecciona una opción.</small> }
             </div>
@@ -71,7 +71,7 @@
             @for (request of requests.controls; track request; let i = $index) {
               <div class="request-row" [formGroupName]="i">
                 <div class="field"><label [for]="'item-' + i">Accesorio <span class="required-symbol">*</span></label><select [id]="'item-' + i" formControlName="item"><option value="" disabled>Selecciona un accesorio</option>@for (accessory of accessories; track accessory.value) { <option [value]="accessory.value">{{ accessory.label }}</option> }</select></div>
-                <div class="field"><label [for]="'request-' + i">Quiero <span class="required-symbol">*</span></label><select [id]="'request-' + i" formControlName="request"><option value="" disabled>Selecciona</option><option value="Buy">Comprar</option><option value="Borrow">Pedir prestado</option><option value="Advice">Pedir asesoramiento</option></select></div>
+                <div class="field"><label [for]="'request-' + i">Quiero <span class="required-symbol">*</span></label><select [id]="'request-' + i" formControlName="request"><option value="" disabled>Selecciona</option><option value="Comprar">Comprar</option><option value="Pedir prestado">Pedir prestado</option><option value="Pedir asesoramiento">Pedir asesoramiento</option></select></div>
                 <div class="field quantity-field"><label [for]="'quantity-' + i">Cantidad</label><input [id]="'quantity-' + i" type="number" formControlName="quantity" min="1" max="20" /></div>
                 <button type="button" class="remove-button" (click)="removeRequest(i)" [attr.aria-label]="'Quitar accesorio ' + (i + 1)">×</button>
                 @if (request.touched && request.invalid) { <small class="field-error row-error">Completa este accesorio e indica una cantidad entre 1 y 20.</small> }
@@ -89,7 +89,7 @@
           </fieldset>
           <div class="field field-full"><label for="issue-description">¿Qué ocurre? ¿Qué notas o situaciones se ven afectadas? <span class="optional">Opcional</span></label><textarea id="issue-description" formControlName="issueDescription" rows="4" maxlength="2000" placeholder="Por ejemplo: las notas graves tardan en salir; la llave del la se atasca después de tocar un rato."></textarea></div>
           <fieldset class="playability-fieldset"><legend>¿Puedes tocar una clase completa con este fagot tal como está? <span class="required-symbol">*</span></legend>
-            <div class="radio-row"><label><input type="radio" formControlName="playability" value="Yes" /> Sí</label><label><input type="radio" formControlName="playability" value="With difficulty" /> Con dificultad</label><label><input type="radio" formControlName="playability" value="No" /> No</label></div>
+            <div class="radio-row"><label><input type="radio" formControlName="playability" value="Sí" /> Sí</label><label><input type="radio" formControlName="playability" value="Con dificultad" /> Con dificultad</label><label><input type="radio" formControlName="playability" value="No" /> No</label></div>
             @if (form.controls.playability.touched && form.controls.playability.invalid) { <small class="field-error">Selecciona una opción.</small> }
           </fieldset>
         </section>
