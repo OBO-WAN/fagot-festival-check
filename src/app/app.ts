@@ -9,8 +9,26 @@ type AccessoryRequest = FormGroup<{
   quantity: FormControl<number>;
 }>;
 
-const ACCESSORIES = ['Reeds', 'Reed case', 'Seat strap', 'Neck strap or harness', 'Hand rest', 'Cleaning swab', 'Bocal', 'Reed-making supplies', 'Other'];
-const ISSUES = ['Notes do not speak', 'Unusual resistance or suspected leak', 'Sticking or noisy keys', 'Loose joint', 'Bocal or reed fit', 'Visible damage', 'Other'];
+const ACCESSORIES = [
+  { value: 'Reeds', label: 'Cañas' },
+  { value: 'Reed case', label: 'Estuche para cañas' },
+  { value: 'Seat strap', label: 'Correa de asiento' },
+  { value: 'Neck strap or harness', label: 'Correa de cuello o arnés' },
+  { value: 'Hand rest', label: 'Apoyamano' },
+  { value: 'Cleaning swab', label: 'Paño de limpieza' },
+  { value: 'Bocal', label: 'Tudel (bocal)' },
+  { value: 'Reed-making supplies', label: 'Material para fabricar cañas' },
+  { value: 'Other', label: 'Otro accesorio' },
+];
+const ISSUES = [
+  { value: 'Notes do not speak', label: 'Hay notas que no responden' },
+  { value: 'Unusual resistance or suspected leak', label: 'Resistencia inusual o posible fuga de aire' },
+  { value: 'Sticking or noisy keys', label: 'Llaves que se atascan o hacen ruido' },
+  { value: 'Loose joint', label: 'Unión floja' },
+  { value: 'Bocal or reed fit', label: 'Encaje del tudel o la caña' },
+  { value: 'Visible damage', label: 'Daños visibles' },
+  { value: 'Other', label: 'Otro problema' },
+];
 
 @Component({
   imports: [ReactiveFormsModule],
@@ -60,11 +78,11 @@ export class App {
     this.message.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.message.set('Please complete the required fields and check your answers.');
+      this.message.set('Completa los campos obligatorios y revisa tus respuestas.');
       return;
     }
     if (!this.configured) {
-      this.message.set('This is a draft preview. Connect a Supabase project before collecting responses.');
+      this.message.set('Esta es una vista previa. Conecta Supabase antes de empezar a recoger respuestas.');
       return;
     }
     this.status.set('sending');
@@ -86,7 +104,7 @@ export class App {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
       this.status.set('error');
-      this.message.set('We could not save your response. Your answers are still here; please try again.');
+      this.message.set('No hemos podido guardar tu respuesta. Tus datos siguen aquí; inténtalo de nuevo.');
     }
   }
 }
