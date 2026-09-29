@@ -199,6 +199,21 @@ input[type="checkbox"], input[type="radio"] { accent-color: #86613e; width: 17px
 .secondary-button { background: transparent; border: 1px solid #8b6c42; border-radius: 5px; color: #684b2f; padding: 12px 16px; margin-top: 12px; font-weight: 700; }
 .site-footer { background: #171b1a; color: #c9b99a; display: flex; justify-content: space-between; gap: 20px; padding: 18px clamp(22px, 4vw, 68px); font-size: 12px; }
 
+.share-widget { position: fixed; z-index: 20; bottom: calc(20px + env(safe-area-inset-bottom)); left: clamp(16px, 2.5vw, 36px); }
+.share-trigger { display: flex; align-items: center; gap: 9px; border: 1px solid #d1b784; border-radius: 999px; padding: 12px 17px; background: #31271f; color: #fff8e9; box-shadow: 0 5px 20px #171b1a40; font-size: 13px; font-weight: 700; cursor: pointer; }
+.share-trigger:hover, .share-trigger[aria-expanded="true"] { background: #5b402c; }
+.share-trigger:focus-visible, .share-panel a:focus-visible, .share-panel button:focus-visible { outline: 3px solid #d7a65c; outline-offset: 3px; }
+.share-panel { position: absolute; bottom: calc(100% + 10px); left: 0; width: min(305px, calc(100vw - 32px)); padding: 19px; border: 1px solid #d7c6a8; border-radius: 12px; background: #fffaf0; color: #302b25; box-shadow: 0 12px 36px #171b1a40; }
+.share-panel[hidden] { display: none; }
+.share-panel strong { font: 600 24px/1.1 'Cormorant Garamond', Georgia, serif; }
+.share-panel p { margin: 6px 0 14px; font-size: 12px; color: #766957; }
+.share-panel a, .share-panel button { display: flex; width: 100%; align-items: center; gap: 10px; padding: 11px 7px; border: 0; border-top: 1px solid #e8ddcb; background: transparent; color: #393128; text-decoration: none; text-align: left; font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.share-panel a:hover, .share-panel button:hover { background: #f5ead6; }
+.share-panel a span:last-child { margin-left: auto; }
+.share-option-icon { display: inline-grid; place-items: center; width: 21px; height: 21px; font-size: 21px; line-height: 1; }
+.share-feedback { display: block; margin: 9px 2px; color: #4a6a37; font-size: 12px; font-weight: 700; }
+.share-panel small { display: block; margin-top: 10px; color: #776d60; font-size: 11px; }
+
 @media (max-width: 1060px) {
   .page-shell { grid-template-columns: 1fr; }
   .intro-panel { padding: 52px clamp(24px, 6vw, 70px); }
@@ -232,4 +247,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: #86613e; width: 17px
   .section-help { margin-left: 0; }
   .site-footer { display: block; }
   .site-footer span { display: block; margin-bottom: 5px; }
+  .share-widget { bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; }
+  .share-trigger { padding: 11px 13px; }
+  .site-footer { padding-bottom: 77px; }
 }

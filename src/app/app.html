@@ -115,4 +115,28 @@
     }
   </section>
 </main>
+<nav class="share-widget" aria-label="Compartir el festival" (keydown.escape)="shareOpen.set(false)">
+  <button type="button" class="share-trigger" aria-controls="share-panel" [attr.aria-expanded]="shareOpen()" (click)="toggleShare()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="m8.2 10.8 7.5-4.5M8.2 13.2l7.5 4.5"/></svg>
+    <span>Compartir festival</span>
+  </button>
+  <div id="share-panel" class="share-panel" [hidden]="!shareOpen()">
+    <strong>Difunde el festival</strong>
+    <p>La Serena · 13 al 19 de diciembre de 2026</p>
+    <a [href]="festivalUrl" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.6" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      Instagram del festival <span aria-hidden="true">↗</span>
+    </a>
+    <a [href]="facebookShareUrl" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true"><path d="M14.6 21v-8h2.7l.4-3.1h-3.1V8c0-.9.3-1.5 1.6-1.5h1.7V3.7a22 22 0 0 0-2.5-.1c-2.5 0-4.2 1.5-4.2 4.3v2H8.4V13h2.8v8h3.4Z"/></svg>
+      Compartir en Facebook <span aria-hidden="true">↗</span>
+    </a>
+    @if (canShare) {
+      <button type="button" (click)="shareFestival()"><span class="share-option-icon" aria-hidden="true">↗</span> Más opciones para compartir</button>
+    }
+    <button type="button" (click)="copyFestivalLink()"><span class="share-option-icon" aria-hidden="true">⧉</span> Copiar enlace</button>
+    @if (shareMessage()) { <span class="share-feedback" role="status">{{ shareMessage() }}</span> }
+    <small>Se comparte el perfil oficial del festival.</small>
+  </div>
+</nav>
 <footer class="site-footer"><span>III Festival Internacional de Fagot y Música de Cámara · Sin fronteras</span><span>La Serena, Chile · 13 al 19 de diciembre de 2026</span></footer>

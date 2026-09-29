@@ -37,6 +37,11 @@ const ISSUES = [
   templateUrl: './app.html',
 })
 export class App {
+  protected readonly festivalUrl = 'https://www.instagram.com/festivalfagot/';
+  protected readonly facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.festivalUrl)}`;
+  protected readonly shareOpen = signal(false);
+  protected readonly shareMessage = signal('');
+  protected readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
   protected readonly accessories = ACCESSORIES;
   protected readonly issues = ISSUES;
   protected readonly selectedIssues = signal<string[]>([]);
@@ -57,6 +62,34 @@ export class App {
   });
 
   protected get requests(): FormArray<AccessoryRequest> { return this.form.controls.accessoryRequests; }
+
+  protected toggleShare(): void {
+    this.shareOpen.update(open => !open);
+    this.shareMessage.set('');
+  }
+
+  protected async shareFestival(): Promise<void> {
+    try {
+      await navigator.share({
+        title: 'III Festival Internacional de Fagot y Música de Cámara · Sin fronteras',
+        text: 'La Serena, Chile · 13 al 19 de diciembre de 2026',
+        url: this.festivalUrl,
+      });
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        this.shareMessage.set('No se pudo abrir el menú para compartir. Puedes copiar el enlace.');
+      }
+    }
+  }
+
+  protected async copyFestivalLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.festivalUrl);
+      this.shareMessage.set('Enlace copiado. ¡Gracias por difundir el festival!');
+    } catch {
+      this.shareMessage.set('No se pudo copiar el enlace. Ábrelo desde Instagram.');
+    }
+  }
 
   protected addRequest(): void {
     if (this.requests.length >= 12) return;
