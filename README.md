@@ -6,6 +6,10 @@ An Angular draft for collecting students' accessory requests and bassoon problem
 
 Requires a current Node.js installation. Run `npm install` and `npm start`; Angular opens the local page in your browser. Without Supabase settings the form is a preview: it retains answers and explains why submission is unavailable.
 
+## Remote preview with GitHub Pages
+
+In this repository, open **Settings → Pages** and choose **GitHub Actions** under **Build and deployment → Source**. The [Pages workflow](.github/workflows/pages.yml) builds on pushes to `main` and can also be started manually from the Actions tab. It uses `/fagot-festival-check/` as the Angular base path. The hosted form is still a preview until Supabase is connected; answers are not saved.
+
 ## Connect Supabase
 
 1. Create a Supabase project and run [supabase/schema.sql](supabase/schema.sql) in its SQL Editor.
