@@ -22,7 +22,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run build -- --base-href /fagot-festival-check/
+      - run: npm run build -- --base-href ./
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist/fagot-festival-check/browser
