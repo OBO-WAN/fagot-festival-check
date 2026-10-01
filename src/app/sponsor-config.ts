@@ -6,10 +6,10 @@ export interface SponsorConfig {
 }
 
 // A public ad-unit ID, never an API key or wallet credential.
-// Supply the owner's AADS unit ID to activate real delivery. An empty ID loads nothing.
+// Unit supplied by the site owner. An empty ID or enabled: false loads nothing.
 export const sponsorConfig: Readonly<SponsorConfig> = {
   enabled: true,
-  adUnitId: '',
+  adUnitId: '2457059',
 };
 
 export const SPONSOR_CONFIG = new InjectionToken<Readonly<SponsorConfig>>(

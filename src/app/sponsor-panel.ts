@@ -18,7 +18,7 @@ export class SponsorPanel implements AfterViewInit {
     if (!this.config.enabled || !/^[1-9]\d{0,19}$/.test(this.unitId)) return null;
     // Only a validated numeric ID can enter this fixed provider URL.
     return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://acceptable.a-ads.com/${this.unitId}/?size=300x250`,
+      `https://ad.a-ads.com/${this.unitId}/?size=300x250`,
     );
   });
   protected readonly visible = computed(() => !this.dismissed() && this.frameUrl() !== null);
