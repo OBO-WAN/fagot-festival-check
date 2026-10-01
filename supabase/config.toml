@@ -1,0 +1,3 @@
+# This function authenticates the database webhook with its own private token.
+[functions.notify-festival-submission]
+verify_jwt = false
