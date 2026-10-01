@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+.sponsor-card {
+  box-sizing: border-box;
+  width: 338px;
+  max-width: calc(100% - 16px);
+  margin: 28px auto;
+  padding: 18px;
+  border: 1px solid #d9cdbb;
+  border-radius: 8px;
+  background: #fffaf0;
+}
+.sponsor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sponsor-label {
+  color: #76654e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.dismiss-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #d9cdbb;
+  border-radius: 50%;
+  background: transparent;
+  color: #684b2f;
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+.dismiss-button:focus-visible {
+  outline: 2px solid #684b2f;
+  outline-offset: 3px;
+}
+iframe {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  height: 250px;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+}
+.sponsor-note {
+  margin: 14px 0 0;
+  color: #6f695f;
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 360px) {
+  .sponsor-card {
+    width: 302px;
+    max-width: none;
+    padding: 12px 0;
+  }
+  .sponsor-heading,
+  .sponsor-note {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+}

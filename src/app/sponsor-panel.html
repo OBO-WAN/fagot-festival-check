@@ -1,0 +1,33 @@
+@if (visible()) {
+  <section class="sponsor-card" aria-label="Espacio patrocinado">
+    <div class="sponsor-heading">
+      <span class="sponsor-label">PUBLICIDAD</span>
+      <button
+        type="button"
+        class="dismiss-button"
+        aria-label="Cerrar espacio patrocinado"
+        (click)="dismiss()"
+      >
+        ×
+      </button>
+    </div>
+    @if (frameUrl(); as url) {
+      <iframe
+        [src]="url"
+        [attr.data-aa]="unitId"
+        title="Publicidad de un tercero"
+        width="300"
+        height="250"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        (load)="onFrameLoad()"
+      >
+      </iframe>
+      <p class="sponsor-note">
+        Este anuncio se carga desde AADS, que recibe información de conexión, como tu IP.
+        Consultarlo es opcional.
+      </p>
+    }
+  </section>
+}

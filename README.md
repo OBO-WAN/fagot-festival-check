@@ -26,6 +26,10 @@ The SQL gives the unauthenticated role permission to insert only the form fields
 - Public insert access can attract spam. Add rate limiting or a protected submission endpoint before wide distribution.
 - Revisit the copy and language with the festival team. The date, location, festival name, and branding have deliberately been left generic.
 
+## AADS sponsorship campaign
+
+The footer supports a real AADS 300×250 banner. Set the owner's public ad-unit ID in `src/app/sponsor-config.ts` to load it; the empty ID currently loads no ad. There is no sample mode. See [the campaign guide](docs/sponsor-experiment.md) for account setup, Lightning withdrawals, delivery verification, and the disable switch.
+
 ## Structure
 
 - `src/app/app.ts`: form model, validation, and Supabase submission.

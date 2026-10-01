@@ -34,7 +34,7 @@
       <div class="success-card" role="status">
         <div class="success-icon" aria-hidden="true">✓</div>
         <p class="section-kicker">RESPUESTA RECIBIDA</p>
-        <h2>Gracias. Nos vemos en el festival.</h2>
+        <h2 id="form-title">Gracias. Nos vemos en el festival.</h2>
         <p>Revisaremos lo que necesitas y nos pondremos en contacto contigo si hace falta.</p>
         <button type="button" class="secondary-button" (click)="status.set('idle')">Enviar otra respuesta</button>
       </div>
@@ -115,6 +115,7 @@
     }
   </section>
 </main>
+<app-sponsor-panel />
 <nav class="share-widget" aria-label="Compartir el festival" (keydown.escape)="shareOpen.set(false)">
   <button type="button" class="share-trigger" aria-label="Compartir el festival" aria-controls="share-panel" [attr.aria-expanded]="shareOpen()" (click)="toggleShare()">
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="m8.2 10.8 7.5-4.5M8.2 13.2l7.5 4.5"/></svg>

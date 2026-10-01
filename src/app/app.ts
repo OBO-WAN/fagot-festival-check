@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../environments/environment';
+import { SponsorPanel } from './sponsor-panel';
 
 type AccessoryRequest = FormGroup<{
   item: FormControl<string>;
@@ -31,7 +32,7 @@ const ISSUES = [
 ];
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SponsorPanel],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
