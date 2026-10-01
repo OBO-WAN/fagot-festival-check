@@ -1,0 +1,45 @@
+@if (visible()) {
+  <section class="sponsor-card" aria-label="Espacio patrocinado">
+    <div class="sponsor-heading">
+      <span class="sponsor-label">{{ mode() === 'preview' ? 'VISTA PREVIA' : 'PUBLICIDAD' }}</span>
+      <button
+        type="button"
+        class="dismiss-button"
+        aria-label="Cerrar espacio patrocinado"
+        (click)="dismiss()"
+      >
+        ×
+      </button>
+    </div>
+    @if (mode() === 'preview') {
+      <div
+        class="sponsor-example"
+        role="img"
+        aria-label="Ejemplo de un espacio patrocinado, sin anuncio real"
+      >
+        <span>UN ESPACIO PARA LA MÚSICA</span>
+        <strong>Colaboradores<br />del festival</strong>
+        <p>Aquí podría aparecer un anuncio.</p>
+      </div>
+      <p class="sponsor-note">
+        Esta es una muestra. No se carga publicidad externa ni se generan ingresos.
+      </p>
+    } @else if (frameUrl(); as url) {
+      <iframe
+        [src]="url"
+        [attr.data-aa]="unitId"
+        title="Publicidad de un tercero"
+        width="300"
+        height="250"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        (load)="onFrameLoad()"
+      >
+      </iframe>
+      <p class="sponsor-note">
+        Publicidad de terceros. Consultarla es opcional; si no aparece, puedes continuar.
+      </p>
+    }
+  </section>
+}

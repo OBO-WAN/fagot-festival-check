@@ -30,14 +30,23 @@
   </aside>
 
   <section class="form-panel" aria-labelledby="form-title">
-    @if (status() === 'success') {
+    @if (sponsorPreview || sponsorCheck) {
+      <div class="success-card">
+        <p class="section-kicker">{{ sponsorPreview ? 'VISTA PREVIA' : 'COLABORADORES' }}</p>
+        <h2 id="form-title">Patrocinio del festival</h2>
+        <p>Consultar este espacio es opcional. Puedes ir directamente al cuestionario para preparar tu participación.</p>
+        <a class="secondary-button" href="?">Ir al cuestionario</a>
+        <app-sponsor-panel [preview]="sponsorPreview" />
+      </div>
+    } @else if (status() === 'success') {
       <div class="success-card" role="status">
         <div class="success-icon" aria-hidden="true">✓</div>
         <p class="section-kicker">RESPUESTA RECIBIDA</p>
-        <h2>Gracias. Nos vemos en el festival.</h2>
+        <h2 id="form-title">Gracias. Nos vemos en el festival.</h2>
         <p>Revisaremos lo que necesitas y nos pondremos en contacto contigo si hace falta.</p>
         <button type="button" class="secondary-button" (click)="status.set('idle')">Enviar otra respuesta</button>
       </div>
+      <app-sponsor-panel />
     } @else {
       <div class="form-heading">
         <p class="section-kicker">FORMULARIO PARA ESTUDIANTES · UNOS 3 MINUTOS</p>

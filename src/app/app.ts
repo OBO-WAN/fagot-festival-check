@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../environments/environment';
+import { SponsorPanel } from './sponsor-panel';
 
 type AccessoryRequest = FormGroup<{
   item: FormControl<string>;
@@ -31,12 +32,14 @@ const ISSUES = [
 ];
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SponsorPanel],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
+  protected readonly sponsorPreview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('sponsor-preview') === '1';
+  protected readonly sponsorCheck = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('sponsor-check') === '1';
   protected readonly festivalUrl = 'https://www.instagram.com/festivalfagot/';
   protected readonly surveyUrl = 'https://encuesta.festival-fagot.online/';
   protected readonly facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.surveyUrl)}`;

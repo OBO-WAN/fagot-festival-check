@@ -26,6 +26,10 @@ The SQL gives the unauthenticated role permission to insert only the form fields
 - Public insert access can attract spam. Add rate limiting or a protected submission endpoint before wide distribution.
 - Revisit the copy and language with the festival team. The date, location, festival name, and branding have deliberately been left generic.
 
+## Optional sponsorship exercise
+
+The sponsorship experiment is off by default. Open `?sponsor-preview=1` on the app to inspect a local sample without submitting the questionnaire or contacting an ad provider. See [the experiment guide](docs/sponsor-experiment.md) for live activation requirements, observation events, verification, and rollback.
+
 ## Structure
 
 - `src/app/app.ts`: form model, validation, and Supabase submission.
