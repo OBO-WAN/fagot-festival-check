@@ -197,7 +197,13 @@ input[type="checkbox"], input[type="radio"] { accent-color: #86613e; width: 17px
 .success-icon { display: grid; place-items: center; width: 52px; height: 52px; background: #e8dcc4; color: #6c4e30; border-radius: 50%; font-size: 24px; margin-bottom: 35px; }
 .success-card > p:not(.section-kicker) { color: #6f695f; line-height: 1.6; }
 .secondary-button { background: transparent; border: 1px solid #8b6c42; border-radius: 5px; color: #684b2f; padding: 12px 16px; margin-top: 12px; font-weight: 700; }
-.site-footer { background: #171b1a; color: #c9b99a; display: flex; justify-content: space-between; gap: 20px; padding: 18px clamp(22px, 4vw, 68px); font-size: 12px; }
+.site-footer { background: #171b1a; color: #c9b99a; display: flex; justify-content: space-between; gap: 20px; padding: 18px clamp(22px, 4vw, 68px) calc(88px + env(safe-area-inset-bottom)); font-size: 12px; }
+
+.teacher-links { position: fixed; z-index: 19; bottom: calc(20px + env(safe-area-inset-bottom)); right: clamp(16px, 2.5vw, 36px); display: flex; gap: 8px; }
+.teacher-links a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 80px; height: 56px; border: 1px solid #d7c6a8; border-radius: 12px; background: #fffaf0; color: #393128; box-shadow: 0 7px 22px #171b1a40; text-decoration: none; font-size: 11px; font-weight: 700; line-height: 1.2; }
+.teacher-links a:hover { background: #f5ead6; }
+.teacher-links a:focus-visible { outline: 3px solid #d7a65c; outline-offset: 3px; }
+.teacher-links svg { flex: none; }
 
 .share-widget { position: fixed; z-index: 20; bottom: calc(20px + env(safe-area-inset-bottom)); left: clamp(16px, 2.5vw, 36px); }
 .share-trigger { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 1px solid #f5ca8f; border-radius: 50%; background: linear-gradient(135deg, #f4ac63 0%, #ce694b 52%, #9c4352 100%); color: #fffaf1; box-shadow: 0 7px 22px #411e2480, inset 0 1px #ffffff80; cursor: pointer; transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s ease; }
@@ -262,5 +268,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: #86613e; width: 17px
   .site-footer span { display: block; margin-bottom: 5px; }
   .share-widget { bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; }
   .share-trigger { width: 52px; height: 52px; }
-  .site-footer { padding-bottom: 77px; }
+  .teacher-links { bottom: calc(12px + env(safe-area-inset-bottom)); right: 12px; }
+  .teacher-links a { width: 72px; height: 52px; }
+  .site-footer { padding-bottom: calc(77px + env(safe-area-inset-bottom)); }
 }
