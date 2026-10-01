@@ -1,6 +1,6 @@
-# Organizer email notifications
+# Festival submission emails
 
-Each new `public.festival_intake` row can trigger an email containing every answer to `info@festival-fagot.online`. The sender is `Festival de Fagot <encuesta@festival-fagot.online>`. Replying uses the participant's email when it is valid. Participant confirmations are not enabled.
+Each new `public.festival_intake` row can trigger an email containing every answer to `info@festival-fagot.online`. The sender is `Festival de Fagot <encuesta@festival-fagot.online>`. Replying uses the participant's email when it is valid. A separate Spanish receipt goes to the single valid email address entered in the saved submission. Replies to that receipt go to the organizer inbox.
 
 ## Setup
 
@@ -9,9 +9,25 @@ Each new `public.festival_intake` row can trigger an email containing every answ
 3. In Supabase Edge Functions → Secrets, save `RESEND_API_KEY`. Also save a separate `FESTIVAL_WEBHOOK_SECRET`: generate a fresh 64-character hexadecimal token using the SQL below and keep a private copy. Copy only the token value, without spaces, line breaks, or quotation marks. Never commit either value or put them in the Angular environment file.
 4. Create an Edge Function named `notify-festival-submission` via the dashboard editor. Replace its `index.ts` with [the source](functions/notify-festival-submission/index.ts), deploy, and turn off **Verify JWT** in the function settings. The code checks `x-festival-webhook-secret` itself. For CLI deployment, `supabase/config.toml` configures the same setting.
 5. Open Integrations → Database Webhooks. Install the integration if needed, then open the Webhooks tab and create an HTTP webhook named `festival-submission-email` for the `public.festival_intake` table's **INSERT** event only. Use POST to `https://aydxnaatgwgkfywfjtct.supabase.co/functions/v1/notify-festival-submission`. Add `Content-Type: application/json` and `x-festival-webhook-secret` with the same private value saved above. After saving, reopen the webhook and confirm that the custom header is present. Set the request timeout to **10000 milliseconds**, the maximum allowed by the dashboard form. No browser changes or public read grants are needed.
-6. Submit a new dummy response through `https://encuesta.festival-fagot.online/`. Confirm the row appears in Supabase, then confirm the complete email reaches the organizer inbox. A successful provider response means the email was accepted, not necessarily delivered; check Resend Emails and the inbox/spam folder if needed.
+6. Submit a new dummy response through `https://encuesta.festival-fagot.online/`. Confirm the row appears in Supabase, then confirm the complete email reaches the organizer inbox and the receipt reaches the participant address. Use an address you control for the participant test. A successful provider response means the email was accepted, not necessarily delivered; check Resend Emails and the inbox/spam folder if needed.
 
-The webhook runs asynchronously after the database insert commits. A failed email does not remove the saved response. Check function logs and Resend Emails for failures; this implementation does not add a retry queue. Resend's idempotency key avoids duplicate emails for the same row during its 24-hour deduplication window. Only new inserts trigger notifications; existing submissions are not emailed automatically.
+The webhook runs asynchronously after the database insert commits. A failed email does not remove the saved response. Check function logs and Resend Emails for failures; this implementation does not add a retry queue. Each valid submission sends two emails. Organizer and participant messages have separate stable Resend idempotency keys to avoid duplicate accepted messages when retrying the same row during the provider's 24-hour deduplication window. The two requests run concurrently with a shared 8-second deadline so they fit within the 10-second webhook timeout. A partial provider failure returns HTTP 502 with individual results; the accepted message can be deduplicated on a manual retry. Invalid or multiple participant addresses are skipped while the organizer is still notified. Only new inserts trigger notifications; existing submissions are not emailed automatically.
+
+## Participant receipt
+
+Subject: **Hemos recibido su respuesta · Festival de Fagot**
+
+> Gracias por completar el cuestionario del Festival de Fagot.
+>
+> Hemos recibido su respuesta correctamente.
+>
+> Si tiene alguna pregunta, puede responder a este correo.
+>
+> Festival de Fagot
+
+The receipt contains a short acknowledgement. The complete answers go to the organizer. The participant address comes only from `record.email`; additional payload fields cannot change the organizer or confirmation recipients.
+
+To enable the receipt in an existing setup, replace the deployed function's `index.ts` with the updated source and deploy the update. Then test a new submission. The existing sending domain, API key, ASCII webhook token, and webhook header are used for both messages.
 
 ## Private token generation
 
@@ -36,6 +52,6 @@ With Node.js 24 or newer:
 node --test supabase/functions/notify-festival-submission/index.test.mjs
 ```
 
-The tests mock the email provider and never send email. They cover private webhook authentication, the fixed recipient, all submission fields, HTML escaping, invalid events, unsafe Reply-To values, provider failures, and repeated requests using the same idempotency key.
+The tests mock the email provider and never send email. They cover private webhook authentication, the fixed recipient, all submission fields, HTML escaping, invalid events, unsafe Reply-To values, provider failures, participant address isolation, the Spanish receipt, partial delivery failure, and repeated requests using separate stable idempotency keys.
 
 References: [Supabase database webhooks](https://supabase.com/docs/guides/database/webhooks), [Edge Function secrets](https://supabase.com/docs/guides/functions/secrets), [Resend Send Email API](https://resend.com/docs/api-reference/emails/send-email).

@@ -33,14 +33,18 @@ function escapeHtml(value: string): string {
   })[character]!);
 }
 
+function participantEmail(record: Record<string, unknown>): string | null {
+  const email = typeof record.email === 'string' ? record.email.trim() : '';
+  return email.length <= 254 && /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(email) ? email : null;
+}
+
 function buildEmail(record: Record<string, unknown>) {
   const answers = fields.map(([key, label]) => [label, display(record[key])]);
-  const email = typeof record.email === 'string' ? record.email.trim() : '';
-  const safeReplyTo = email.length <= 254 && /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(email);
+  const email = participantEmail(record);
   return {
     from: sender,
     to: [recipient],
-    ...(safeReplyTo ? { reply_to: email } : {}),
+    ...(email ? { reply_to: email } : {}),
     subject: 'Nueva respuesta al cuestionario · Festival de Fagot',
     text: 'Se ha recibido una nueva respuesta al cuestionario del festival.\n\n' +
       answers.map(([label, value]) => `${label}\n${value}`).join('\n\n'),
@@ -48,6 +52,59 @@ function buildEmail(record: Record<string, unknown>) {
       answers.map(([label, value]) => `<p><strong>${escapeHtml(label)}</strong></p>` +
         `<pre style="white-space:pre-wrap;font-family:Arial,sans-serif">${escapeHtml(value)}</pre>`).join(''),
   };
+}
+
+function buildConfirmation(email: string) {
+  const paragraphs = [
+    'Gracias por completar el cuestionario del Festival de Fagot.',
+    'Hemos recibido su respuesta correctamente.',
+    'Si tiene alguna pregunta, puede responder a este correo.',
+    'Festival de Fagot',
+  ];
+  return {
+    from: sender,
+    to: [email],
+    reply_to: recipient,
+    subject: 'Hemos recibido su respuesta · Festival de Fagot',
+    text: paragraphs.join('\n\n'),
+    html: paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join(''),
+  };
+}
+
+type DeliveryResult =
+  | { accepted: true; email_id: string }
+  | { accepted: false; error: string };
+
+async function sendEmail(
+  email: Record<string, unknown>,
+  idempotencyKey: string,
+  resendKey: string,
+  signal: AbortSignal,
+): Promise<DeliveryResult> {
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+      },
+      body: JSON.stringify(email),
+      signal,
+    });
+    if (!response.ok) {
+      console.error(`Resend rejected a festival email: HTTP ${response.status}`);
+      return { accepted: false, error: 'Email provider rejected the message' };
+    }
+    const result = await response.json();
+    if (typeof result.id !== 'string') {
+      return { accepted: false, error: 'Unexpected email provider response' };
+    }
+    return { accepted: true, email_id: result.id };
+  } catch {
+    console.error('Festival email request failed. The submission remains saved in Supabase.');
+    return { accepted: false, error: 'Email provider request failed' };
+  }
 }
 
 Deno.serve(async (request: Request): Promise<Response> => {
@@ -82,28 +139,21 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return Response.json({ error: 'Invalid festival submission event' }, { status: 400 });
   }
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-        'Idempotency-Key': `festival-submission/${record.id}`,
-      },
-      body: JSON.stringify(buildEmail(record)),
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!response.ok) {
-      console.error(`Resend rejected a festival notification: HTTP ${response.status}`);
-      return Response.json({ error: 'Email provider rejected the notification' }, { status: 502 });
-    }
-    const result = await response.json();
-    if (typeof result.id !== 'string') {
-      return Response.json({ error: 'Unexpected email provider response' }, { status: 502 });
-    }
-    return Response.json({ accepted: true, email_id: result.id });
-  } catch {
-    console.error('Festival notification request failed. The submission remains saved in Supabase.');
-    return Response.json({ error: 'Email provider request failed' }, { status: 502 });
-  }
+  const email = participantEmail(record);
+  // Both requests share an 8-second deadline, below the 10-second webhook timeout.
+  const signal = AbortSignal.timeout(8000);
+  const [organizer, confirmation] = await Promise.all([
+    sendEmail(buildEmail(record), `festival-submission/${record.id}`, resendKey, signal),
+    email
+      ? sendEmail(buildConfirmation(email), `festival-confirmation/${record.id}`, resendKey, signal)
+      : Promise.resolve({ accepted: false as const, skipped: true as const, reason: 'Invalid participant email' }),
+  ]);
+  const accepted = organizer.accepted && (confirmation.accepted || 'skipped' in confirmation);
+  return Response.json({
+    accepted,
+    ...(organizer.accepted ? { email_id: organizer.email_id } : {}),
+    ...(!accepted ? { error: 'One or more festival emails could not be accepted' } : {}),
+    organizer,
+    confirmation,
+  }, { status: accepted ? 200 : 502 });
 });

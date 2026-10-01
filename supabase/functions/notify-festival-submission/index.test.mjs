@@ -19,7 +19,7 @@ const sample = {
   },
 };
 
-function setup({ secret = token, providerStatus = 200 } = {}) {
+function setup({ secret = token, providerStatus = 200, confirmationStatus = providerStatus } = {}) {
   const calls = [];
   let handler;
   vm.runInNewContext(source, {
@@ -31,7 +31,10 @@ function setup({ secret = token, providerStatus = 200 } = {}) {
     console: { error() {} },
     fetch: async (url, options) => {
       calls.push({ url, ...options, body: JSON.parse(options.body) });
-      return Response.json({ id: 'test-provider-id' }, { status: providerStatus });
+      const confirmation = options.headers['Idempotency-Key'].startsWith('festival-confirmation/');
+      return Response.json({ id: confirmation ? 'test-confirmation-id' : 'test-organizer-id' }, {
+        status: confirmation ? confirmationStatus : providerStatus,
+      });
     },
   });
   const request = (payload = sample, suppliedToken = token) => new Request('https://example.test', {
@@ -53,7 +56,7 @@ test('rejects missing or incorrect webhook tokens without contacting the email p
 test('includes every answer, escapes HTML, and always sends to the organizer', async () => {
   const { handler, calls, request } = setup();
   assert.equal((await handler(request())).status, 200);
-  assert.equal(calls.length, 1);
+  assert.equal(calls.length, 2);
   const email = calls[0].body;
   assert.deepEqual(email.to, ['info@festival-fagot.online']);
   assert.equal(email.reply_to, 'participant@example.com');
@@ -73,7 +76,9 @@ test('includes every answer, escapes HTML, and always sends to the organizer', a
   assert.ok(!email.text.includes('unwanted-recipient@example.com'));
   assert.equal(calls[0].headers['Idempotency-Key'], `festival-submission/${sample.record.id}`);
   await handler(request());
-  assert.equal(calls[1].headers['Idempotency-Key'], calls[0].headers['Idempotency-Key']);
+  assert.equal(calls[2].headers['Idempotency-Key'], calls[0].headers['Idempotency-Key']);
+  assert.equal(calls[3].headers['Idempotency-Key'], calls[1].headers['Idempotency-Key']);
+  assert.notEqual(calls[0].headers['Idempotency-Key'], calls[1].headers['Idempotency-Key']);
 });
 
 test('rejects wrong table events and returns an error when sending fails', async () => {
@@ -91,4 +96,68 @@ test('does not turn malformed participant email into an email header', async () 
   await handler(request({ ...sample, record: { ...sample.record, email: 'user@example.com\r\nBcc: other@example.com' } }));
   assert.equal(Object.hasOwn(calls[0].body, 'reply_to'), false);
   assert.deepEqual(calls[0].body.to, ['info@festival-fagot.online']);
+});
+
+test('sends a short Spanish confirmation only to the submitted address, with organizer Reply-To', async () => {
+  const { handler, calls, request } = setup();
+  const response = await handler(request({
+    ...sample, record: { ...sample.record, email: '  participant@example.com  ' },
+  }));
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.accepted, true);
+  assert.equal(result.email_id, 'test-organizer-id');
+  assert.equal(result.confirmation.email_id, 'test-confirmation-id');
+  const confirmation = calls[1].body;
+  assert.deepEqual(confirmation.to, ['participant@example.com']);
+  assert.equal(confirmation.reply_to, 'info@festival-fagot.online');
+  assert.equal(confirmation.from, 'Festival de Fagot <encuesta@festival-fagot.online>');
+  assert.equal(confirmation.subject, 'Hemos recibido su respuesta · Festival de Fagot');
+  assert.ok(confirmation.text.includes('Hemos recibido su respuesta correctamente.'));
+  assert.ok(confirmation.html.includes('<p>Hemos recibido su respuesta correctamente.</p>'));
+  assert.ok(!confirmation.html.includes('<img'));
+  assert.ok(!confirmation.text.includes(sample.record.issue_description));
+  assert.ok(!confirmation.text.includes('unwanted-recipient@example.com'));
+  assert.equal(calls[1].headers['Idempotency-Key'], `festival-confirmation/${sample.record.id}`);
+  assert.equal(calls[0].signal, calls[1].signal);
+});
+
+test('skips malformed or multiple participant addresses while still notifying the organizer', async () => {
+  for (const email of [
+    '',
+    'not-an-email',
+    'user@example.com,second@example.com',
+    'user@example.com;second@example.com',
+    'user@example.com\r\nBcc: second@example.com',
+    'Display Name <user@example.com>',
+  ]) {
+    const { handler, calls, request } = setup();
+    const response = await handler(request({ ...sample, record: { ...sample.record, email } }));
+    assert.equal(response.status, 200);
+    const result = await response.json();
+    assert.equal(result.organizer.accepted, true);
+    assert.equal(result.confirmation.skipped, true);
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0].body.to, ['info@festival-fagot.online']);
+    assert.equal(Object.hasOwn(calls[0].body, 'reply_to'), false);
+  }
+});
+
+test('reports partial failure and retains separate stable keys for a confirmation retry', async () => {
+  const { handler, calls, request } = setup({ confirmationStatus: 429 });
+  const response = await handler(request());
+  assert.equal(response.status, 502);
+  const result = await response.json();
+  assert.equal(result.accepted, false);
+  assert.equal(result.organizer.accepted, true);
+  assert.equal(result.confirmation.accepted, false);
+  await handler(request());
+  assert.equal(calls[0].headers['Idempotency-Key'], calls[2].headers['Idempotency-Key']);
+  assert.equal(calls[1].headers['Idempotency-Key'], calls[3].headers['Idempotency-Key']);
+  const organizerRejected = setup({ providerStatus: 429, confirmationStatus: 200 });
+  const otherResponse = await organizerRejected.handler(organizerRejected.request());
+  assert.equal(otherResponse.status, 502);
+  const otherResult = await otherResponse.json();
+  assert.equal(otherResult.organizer.accepted, false);
+  assert.equal(otherResult.confirmation.accepted, true);
 });
