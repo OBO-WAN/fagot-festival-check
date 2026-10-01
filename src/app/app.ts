@@ -41,6 +41,7 @@ export class App {
   protected readonly surveyUrl = 'https://encuesta.festival-fagot.online/';
   protected readonly facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.surveyUrl)}`;
   protected readonly shareOpen = signal(false);
+  protected readonly youtubeOpen = signal(false);
   protected readonly shareMessage = signal('');
   protected readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
   protected readonly accessories = ACCESSORIES;
@@ -66,7 +67,13 @@ export class App {
 
   protected toggleShare(): void {
     this.shareOpen.update(open => !open);
+    if (this.shareOpen()) this.youtubeOpen.set(false);
     this.shareMessage.set('');
+  }
+
+  protected toggleYoutube(): void {
+    this.youtubeOpen.update(open => !open);
+    if (this.youtubeOpen()) this.shareOpen.set(false);
   }
 
   protected async shareFestival(): Promise<void> {

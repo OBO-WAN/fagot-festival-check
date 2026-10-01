@@ -138,14 +138,21 @@
     <small>Se comparte el enlace al cuestionario del festival.</small>
   </div>
 </nav>
-<nav class="teacher-links" aria-label="YouTube del equipo docente">
-  <a href="https://www.youtube.com/channel/UCctP76XSaA6zfUnp6LifAPg" target="_blank" rel="noopener noreferrer" aria-label="YouTube del profesor (se abre en una pestaña nueva)">
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="5" fill="#ff0033"/><path d="m10 8 6 4-6 4Z" fill="#fff"/></svg>
-    <span>Profesor</span>
-  </a>
-  <a href="https://www.youtube.com/watch?v=H1F02vL6w0w" target="_blank" rel="noopener noreferrer" aria-label="YouTube del asistente (se abre en una pestaña nueva)">
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="5" fill="#ff0033"/><path d="m10 8 6 4-6 4Z" fill="#fff"/></svg>
-    <span>Asistente</span>
-  </a>
+<nav class="youtube-widget" aria-label="YouTube del equipo docente" (keydown.escape)="youtubeOpen.set(false); youtubeTrigger.focus()">
+  <button #youtubeTrigger type="button" class="share-trigger youtube-trigger" aria-label="Ver YouTube del equipo docente" aria-controls="youtube-panel" [attr.aria-expanded]="youtubeOpen()" (click)="toggleYoutube()">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="5" fill="currentColor"/><path d="m10 8 6 4-6 4Z" fill="#ff0033"/></svg>
+  </button>
+  <div id="youtube-panel" class="share-panel youtube-panel" [hidden]="!youtubeOpen()">
+    <strong>Equipo docente</strong>
+    <p>Conoce al profesor y al asistente en YouTube.</p>
+    <a href="https://www.youtube.com/channel/UCctP76XSaA6zfUnp6LifAPg" target="_blank" rel="noopener noreferrer" aria-label="YouTube del profesor (se abre en una pestaña nueva)">
+      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="5" fill="#ff0033"/><path d="m10 8 6 4-6 4Z" fill="#fff"/></svg>
+      Profesor <span aria-hidden="true">↗</span>
+    </a>
+    <a href="https://www.youtube.com/watch?v=H1F02vL6w0w" target="_blank" rel="noopener noreferrer" aria-label="YouTube del asistente (se abre en una pestaña nueva)">
+      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="5" fill="#ff0033"/><path d="m10 8 6 4-6 4Z" fill="#fff"/></svg>
+      Asistente <span aria-hidden="true">↗</span>
+    </a>
+  </div>
 </nav>
 <footer class="site-footer"><span>III Festival Internacional de Fagot y Música de Cámara · Sin fronteras</span><span>La Serena, Chile · 13 al 19 de diciembre de 2026</span></footer>
