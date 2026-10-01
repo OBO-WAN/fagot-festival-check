@@ -13,10 +13,11 @@ describe('SponsorPanel', () => {
     return fixture;
   }
 
-  it('renders no panel or iframe with the shipped default configuration', () => {
+  it('loads the owner-provided ad unit with the shipped configuration', () => {
     const fixture = mount();
-    expect(fixture.nativeElement.querySelector('section')).toBeNull();
-    expect(fixture.nativeElement.querySelector('iframe')).toBeNull();
+    const frame: HTMLIFrameElement = fixture.nativeElement.querySelector('iframe');
+    expect(frame.getAttribute('data-aa')).toBe('2457059');
+    expect(frame.getAttribute('src')).toBe('https://ad.a-ads.com/2457059/?size=300x250');
   });
 
   it('does not load the provider when disabled, even with a valid ID', () => {
@@ -36,9 +37,9 @@ describe('SponsorPanel', () => {
   it('restricts a live frame to the configured provider and matching public ID', () => {
     const fixture = mount({ enabled: true, adUnitId: '1234567' });
     const frame: HTMLIFrameElement = fixture.nativeElement.querySelector('iframe');
-    expect(frame.getAttribute('src')).toBe('https://acceptable.a-ads.com/1234567/?size=300x250');
+    expect(frame.getAttribute('src')).toBe('https://ad.a-ads.com/1234567/?size=300x250');
     expect(frame.getAttribute('data-aa')).toBe('1234567');
-    expect(frame.getAttribute('referrerpolicy')).toBe('no-referrer');
+    expect(frame.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin');
     expect(frame.getAttribute('sandbox')).not.toContain('allow-top-navigation');
   });
 
