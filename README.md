@@ -28,7 +28,7 @@ The SQL gives the unauthenticated role permission to insert only the form fields
 
 ## AADS sponsorship campaign
 
-The footer is configured for the owner's real AADS 300×250 unit **2457059**, supplied in the generated embed code. After deployment, verify detection in the AADS dashboard before claiming earnings. There is no sample mode. See [the campaign guide](docs/sponsor-experiment.md) for Lightning withdrawals, delivery verification, and the disable switch.
+The static homepage includes the owner's real AADS 300×250 unit **2457059** in its initial HTML, so provider detection does not depend on JavaScript startup. Angular hydration keeps the questionnaire interactive; hosting still uses static files. After deployment, verify detection in the AADS dashboard before claiming earnings. There is no sample mode. See [the campaign guide](docs/sponsor-experiment.md) for Lightning withdrawals, delivery verification, and the disable switch.
 
 ## Structure
 

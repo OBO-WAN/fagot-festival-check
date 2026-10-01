@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { afterNextRender, Component, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../environments/environment';
@@ -44,7 +44,7 @@ export class App {
   protected readonly shareOpen = signal(false);
   protected readonly youtubeOpen = signal(false);
   protected readonly shareMessage = signal('');
-  protected readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  protected readonly canShare = signal(false);
   protected readonly accessories = ACCESSORIES;
   protected readonly issues = ISSUES;
   protected readonly selectedIssues = signal<string[]>([]);
@@ -63,6 +63,10 @@ export class App {
     issueDescription: new FormControl('', { nonNullable: true, validators: Validators.maxLength(2000) }),
     playability: new FormControl('', { nonNullable: true, validators: Validators.required }),
   });
+
+  constructor() {
+    afterNextRender(() => this.canShare.set(typeof navigator.share === 'function'));
+  }
 
   protected get requests(): FormArray<AccessoryRequest> { return this.form.controls.accessoryRequests; }
 
