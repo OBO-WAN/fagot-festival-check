@@ -200,8 +200,21 @@ input[type="checkbox"], input[type="radio"] { accent-color: #86613e; width: 17px
 .site-footer { background: #171b1a; color: #c9b99a; display: flex; justify-content: space-between; gap: 20px; padding: 18px clamp(22px, 4vw, 68px); font-size: 12px; }
 
 .share-widget { position: fixed; z-index: 20; bottom: calc(20px + env(safe-area-inset-bottom)); left: clamp(16px, 2.5vw, 36px); }
-.share-trigger { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 1px solid #f5ca8f; border-radius: 50%; background: linear-gradient(135deg, #f4ac63 0%, #ce694b 52%, #9c4352 100%); color: #fffaf1; box-shadow: 0 7px 22px #411e2480, inset 0 1px #ffffff80; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+.share-trigger { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 1px solid #f5ca8f; border-radius: 50%; background: linear-gradient(135deg, #f4ac63 0%, #ce694b 52%, #9c4352 100%); color: #fffaf1; box-shadow: 0 7px 22px #411e2480, inset 0 1px #ffffff80; cursor: pointer; transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s ease; }
 .share-trigger:hover, .share-trigger[aria-expanded="true"] { transform: translateY(-2px); box-shadow: 0 10px 27px #411e2499, inset 0 1px #ffffff80; }
+.share-trigger:active { transform: translateY(-2px) scale(.92); }
+.share-trigger[aria-expanded="true"] svg { animation: share-click .4s ease-in-out; transform-origin: center; }
+@keyframes share-click {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  35% { transform: scale(.9) rotate(-10deg); }
+  70% { transform: scale(1.1) rotate(7deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-trigger { transition: none; }
+  .share-trigger:hover, .share-trigger:active, .share-trigger[aria-expanded="true"] { transform: none; }
+  .share-trigger svg { animation: none; }
+}
+
 .share-trigger:focus-visible, .share-panel a:focus-visible, .share-panel button:focus-visible { outline: 3px solid #d7a65c; outline-offset: 3px; }
 .share-panel { position: absolute; bottom: calc(100% + 10px); left: 0; width: min(305px, calc(100vw - 32px)); padding: 19px; border: 1px solid #d7c6a8; border-radius: 12px; background: #fffaf0; color: #302b25; box-shadow: 0 12px 36px #171b1a40; }
 .share-panel[hidden] { display: none; }
