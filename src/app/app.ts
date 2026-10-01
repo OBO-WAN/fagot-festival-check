@@ -38,8 +38,6 @@ const ISSUES = [
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly sponsorPreview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('sponsor-preview') === '1';
-  protected readonly sponsorCheck = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('sponsor-check') === '1';
   protected readonly festivalUrl = 'https://www.instagram.com/festivalfagot/';
   protected readonly surveyUrl = 'https://encuesta.festival-fagot.online/';
   protected readonly facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.surveyUrl)}`;

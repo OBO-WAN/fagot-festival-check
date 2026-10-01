@@ -15,7 +15,7 @@ describe('Survey sponsorship placement', () => {
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
     TestBed.configureTestingModule({
       imports: [App],
-      providers: [{ provide: SPONSOR_CONFIG, useValue: { mode: 'preview', adUnitId: '' } }],
+      providers: [{ provide: SPONSOR_CONFIG, useValue: { enabled: true, adUnitId: '1234567' } }],
     });
   });
 
@@ -42,9 +42,9 @@ describe('Survey sponsorship placement', () => {
     return fixture;
   }
 
-  it('shows the sample only after a successful save and closing it preserves confirmation', async () => {
+  it('loads one real provider frame before submission and closing it preserves confirmation', async () => {
     const fixture = readyForm();
-    expect(fixture.nativeElement.querySelector('app-sponsor-panel')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('iframe[data-aa]').length).toBe(1);
     fixture.nativeElement
       .querySelector('form')
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -59,7 +59,7 @@ describe('Survey sponsorship placement', () => {
     expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 
-  it('keeps answers and does not show an ad when saving fails', async () => {
+  it('keeps answers and the independent footer banner when saving fails', async () => {
     insert.mockResolvedValue({ error: new Error('Test save failure') });
     const fixture = readyForm();
     fixture.nativeElement
@@ -67,19 +67,19 @@ describe('Survey sponsorship placement', () => {
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-sponsor-panel')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('iframe[data-aa]').length).toBe(1);
     expect(fixture.nativeElement.querySelector('#student-name').value).toBe('Test participant');
     expect(fixture.nativeElement.textContent).toContain('No hemos podido guardar tu respuesta');
   });
 
-  it('opens the preview without saving or claiming a response was received', () => {
+  it('does not turn a legacy preview URL into a fake survey or sample ad', () => {
     window.history.replaceState({}, '', '/?sponsor-preview=1');
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(insert).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.querySelector('form')).toBeNull();
-    expect(fixture.nativeElement.querySelector('iframe')).toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Patrocinio del festival');
+    expect(fixture.nativeElement.querySelector('form')).not.toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('iframe[data-aa]').length).toBe(1);
+    expect(fixture.nativeElement.textContent).not.toContain('VISTA PREVIA');
     expect(fixture.nativeElement.textContent).not.toContain('RESPUESTA RECIBIDA');
   });
 });

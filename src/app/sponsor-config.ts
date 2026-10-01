@@ -1,14 +1,14 @@
 import { InjectionToken } from '@angular/core';
 
 export interface SponsorConfig {
-  mode: 'off' | 'preview' | 'live';
+  enabled: boolean;
   adUnitId: string;
 }
 
 // A public ad-unit ID, never an API key or wallet credential.
-// Enable live mode only after AADS approves the site and placement.
+// Supply the owner's AADS unit ID to activate real delivery. An empty ID loads nothing.
 export const sponsorConfig: Readonly<SponsorConfig> = {
-  mode: 'off',
+  enabled: true,
   adUnitId: '',
 };
 

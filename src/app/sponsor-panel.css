@@ -2,8 +2,10 @@
   display: block;
 }
 .sponsor-card {
-  max-width: 360px;
-  margin-top: 28px;
+  box-sizing: border-box;
+  width: 338px;
+  max-width: calc(100% - 16px);
+  margin: 28px auto;
   padding: 18px;
   border: 1px solid #d9cdbb;
   border-radius: 8px;
@@ -41,33 +43,6 @@
   outline: 2px solid #684b2f;
   outline-offset: 3px;
 }
-.sponsor-example {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 250px;
-  box-sizing: border-box;
-  padding: 24px;
-  background: #202824;
-  color: #f7f3ea;
-}
-.sponsor-example > span {
-  color: #d4bd91;
-  font-size: 9px;
-  letter-spacing: 0.15em;
-}
-.sponsor-example > strong {
-  margin-top: 22px;
-  font-family: Georgia, serif;
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 1.1;
-}
-.sponsor-example > p {
-  margin: 20px 0 0;
-  font-size: 12px;
-  line-height: 1.5;
-}
 iframe {
   display: block;
   width: 300px;
@@ -83,12 +58,15 @@ iframe {
   font-size: 12px;
   line-height: 1.6;
 }
-@media (max-width: 380px) {
+@media (max-width: 360px) {
   .sponsor-card {
-    width: calc(100% + 40px);
+    width: 302px;
     max-width: none;
-    margin-left: -20px;
-    margin-right: -20px;
-    padding: 9px;
+    padding: 12px 0;
+  }
+  .sponsor-heading,
+  .sponsor-note {
+    margin-left: 12px;
+    margin-right: 12px;
   }
 }

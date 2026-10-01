@@ -1,61 +1,42 @@
-# Optional sponsorship exercise
+# Real AADS sponsorship campaign
 
-The default configuration is **off**. The normal questionnaire and its submission flow do not load an ad. The panel is eligible to appear only after a successful save, or on the dedicated public verification view described below.
+This integration loads a real AADS 300×250 iframe in a labelled, dismissible slot below the questionnaire. It appears on the public root page before or after submission, so the provider's verifier can reach it. Social buttons remain independent links; clicking them does not generate ad income.
 
-## Preview without an ad account
+**Activation is pending the owner's public AADS ad-unit ID.** The configuration has `enabled: true`, but an empty or invalid ID loads nothing. There is no sample banner, simulated earnings, or preview route.
 
-Run `npm ci` and `npm start`. Open `http://localhost:4200/?sponsor-preview=1`.
+## Activate real delivery
 
-This view shows a labelled, dismissible sample in the festival's visual style. It does not submit a response, display a real advertiser, contact AADS, or earn sats. The preview query always selects the sample, even if the configured mode is live. Click **Ir al cuestionario** to return to the form.
+1. Use an AADS account that you control. Review the provider's site eligibility requirements, including domain age, and accept its terms yourself when creating the unit. This code does not create an account or ad unit.
+2. Create a fixed-size **300×250** website unit for `https://encuesta.festival-fagot.online/`. Block Investments, Gambling, NSFW, and Risky projects. Use the footer placement rather than a popup or an ad gated behind the form.
+3. Copy the public numeric ID from your generated embed code into `adUnitId` in `src/app/sponsor-config.ts`. Leave `enabled: true`. An ID identifies the account that receives earnings: never use a demo unit or somebody else's ID. Do not include API keys, login details, or wallet secrets in the repository.
+4. Build and deploy the change. Confirm the live page contains exactly one `iframe[data-aa]` whose ID and provider URL match your unit. Check mobile layout, closing the banner, and survey submission independently. Do not send dummy answers to the production survey.
+5. Use AADS's verification/status controls to confirm the public page is accessible, the unit is healthy, and real ads are being delivered. Check the generated embed against the fixed HTTPS URL in this component. If sandboxing or the no-referrer policy prevents delivery or verification, investigate with provider support before changing those protections. Passing the automated tests is not evidence of ad delivery.
+6. Set up Lightning withdrawals in your AADS account using a receiving method you control. Funds are credited by AADS to your publisher balance; the website never handles funds or requests a payment from a participant. No payout destination has been configured by this code.
 
-To show this sample after real successful submissions, change `mode` to `preview` in `src/app/sponsor-config.ts`. Keep the default `off` if the exercise should be accessible only through the preview link.
+The banner includes a connection-data notice. A live ad request discloses normal network information, such as the visitor's IP, to AADS. No form values are passed to the ad URL. Verify the provider's content filters and privacy requirements before inviting participants.
 
-## Observe behaviour
+## Measure the actual campaign
 
-In the browser developer console, before closing the sample, run:
+Record the campaign dates, AADS-counted impressions, publisher earnings, and any actual Lightning withdrawal. Use the provider's dashboard for these numbers. Record setup time too, so the exercise can be evaluated even if revenue is tiny or zero. Advertiser availability, eligibility, and traffic quality determine whether a request earns anything.
 
-```js
-window.addEventListener('festival:sponsor', ({ detail }) => console.log(detail));
-```
+For local debugging only, the component emits `festival:sponsor` DOM events with `{ event, provider: 'aads' }`. Events are `panel_rendered`, `frame_loaded`, and `panel_dismissed`. They contain no survey data, visitor ID, cookie, or persistent storage. They are not campaign-wide analytics: mounting or loading the iframe does not prove an ad was visible or billable. Cross-origin ad clicks are not intercepted or simulated.
 
-The panel emits `panel_rendered`, `frame_loaded` (live only), and `panel_dismissed`, with its mode. To observe the initial render, attach the listener before mounting the panel, for example before submitting a test form in a separate test environment.
+With fewer than 1,000 expected visitors, treat the result as a small operational experiment. Do not click your own ads, encourage artificial clicks, or refresh the banner to inflate impressions. More social-button clicks do not imply more publisher income.
 
-These are local DOM events, with no server endpoint, cookie, local storage, visitor identifier, or form data. They are not campaign-wide analytics. `panel_rendered` describes mounting, not visibility. An iframe load does not prove that an ad rendered successfully, was viewed, or earned money. Cross-origin ad clicks are not intercepted. AADS's own dashboard is the authority for impressions, earnings, and payouts.
+## Disable and verify
 
-Do not submit dummy responses to the production survey just to test this feature. Use the preview link or the mocked component tests instead.
-
-## Before live activation
-
-1. Confirm that the website is eligible with AADS, including its domain-age requirement. Create a publisher account yourself and review its terms. No account or ad unit is created by this change.
-2. Obtain approval for the after-submission placement and dedicated verification view. AADS requires approval for non-standard locations. Its verification bot cannot complete this questionnaire to reach the success screen.
-3. Configure a 300×250 ad unit, conservative content filters suitable for festival participants, and your Lightning payout destination in AADS. Never place payout secrets or API keys in this repository.
-4. Set `mode: 'live'` and replace the empty `adUnitId` in `src/app/sponsor-config.ts` with your public, numeric ad-unit ID. Invalid or missing IDs fail closed and render no panel.
-5. Build a review deployment. Register its `?sponsor-check=1` URL as the bot-accessible verification page. It has contextual festival information and displays the configured panel without pretending that a response was received or requiring a submission.
-6. Verify the placement in AADS and test with its approved procedure. Check that its embed works with the iframe sandbox and no-referrer policy; request support if they interfere with verification or advertiser links rather than removing protections without review. No live delivery or earnings have been verified by this exercise.
-7. Review the site's privacy notice for the live third-party connection, then publish only when the placement and content settings are ready.
-
-The live iframe uses a fixed HTTPS AADS host and a validated numeric ID, is labelled as advertising, is dismissible, and has no timer, auto-refresh, forced redirect, or connection to social buttons. It sends no survey values to the provider. A live iframe still contacts a third party and exposes normal connection information such as the visitor's IP address to that provider; this is not a zero-risk experiment.
-
-If no advertiser is available or an ad blocker prevents delivery, visitors can still leave or submit another response. Closing the panel never changes the saved submission.
-
-## Small experiment and rollback
-
-Keep a manual record of campaign dates, AADS counted impressions and earned sats, and the effort spent on setup. Use existing response totals to monitor survey completion; this change does not add a tracking system. With fewer than 1,000 visitors, results are exploratory and should not be treated as a reliable conversion experiment.
-
-Stop if the content is unsuitable, the form experience degrades, or support costs outweigh what you want to learn. To stop external ad requests for new visits, set `mode: 'off'`, rebuild, and deploy. The next page load will contain no ad iframe. Already-open tabs must reload to receive the new configuration.
-
-## Verification
+Set `enabled: false` in `src/app/sponsor-config.ts`, rebuild, and deploy to stop ad requests on new page loads. Already-open pages receive the change after reloading. Dismissing the banner on a page does not change questionnaire answers or the saved confirmation.
 
 ```sh
 npm run build
 npm test -- --watch=false
 ```
 
-Tests cover the default-off state, preview isolation, invalid live IDs, the bounded live URL, dismissal, and successful/failed survey saves using a mocked Supabase client.
+Tests cover missing/invalid IDs, the disable switch, the fixed provider host and matching unit ID, dismissal, and the banner's independence from successful or failed survey saves. Supabase is mocked in automated tests, and numeric IDs used there are test fixtures only.
 
 ## Provider references
 
+- [Create an ad unit](https://help.aads.com/en/article/how-to-create-an-ad-unit-1pqx5hd/)
 - [Embedding and verification](https://help.aads.com/en/article/how-to-place-an-ad-unit-code-correctly-12n1ti5/)
-- [Publisher terms and placement requirements](https://aads.com/terms-of-service/)
-
-Provider policies may change; verify them again before activating the live mode.
+- [Publisher terms](https://aads.com/terms-of-service/)
+- [Lightning payments](https://aads.com/lightning/)

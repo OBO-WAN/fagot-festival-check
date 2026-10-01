@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, computed, inject, input, signal } from '@angular/core';
+import { Component, AfterViewInit, computed, inject, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SPONSOR_CONFIG } from './sponsor-config';
 
@@ -8,24 +8,20 @@ import { SPONSOR_CONFIG } from './sponsor-config';
   styleUrl: './sponsor-panel.css',
 })
 export class SponsorPanel implements AfterViewInit {
-  readonly preview = input(false);
   private readonly config = inject(SPONSOR_CONFIG);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly dismissed = signal(false);
   private frameLoaded = false;
 
-  protected readonly mode = computed(() => (this.preview() ? 'preview' : this.config.mode));
   protected readonly unitId = this.config.adUnitId.trim();
   protected readonly frameUrl = computed(() => {
-    if (this.mode() !== 'live' || !/^[1-9]\d{0,19}$/.test(this.unitId)) return null;
+    if (!this.config.enabled || !/^[1-9]\d{0,19}$/.test(this.unitId)) return null;
     // Only a validated numeric ID can enter this fixed provider URL.
     return this.sanitizer.bypassSecurityTrustResourceUrl(
       `https://acceptable.a-ads.com/${this.unitId}/?size=300x250`,
     );
   });
-  protected readonly visible = computed(
-    () => !this.dismissed() && (this.mode() === 'preview' || this.frameUrl() !== null),
-  );
+  protected readonly visible = computed(() => !this.dismissed() && this.frameUrl() !== null);
 
   ngAfterViewInit(): void {
     if (this.visible()) this.record('panel_rendered');
@@ -48,7 +44,7 @@ export class SponsorPanel implements AfterViewInit {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(
         new CustomEvent('festival:sponsor', {
-          detail: { event, mode: this.mode() },
+          detail: { event, provider: 'aads' },
         }),
       );
     }
