@@ -33,7 +33,7 @@ const ISSUES = [
 
 @Component({
   imports: [ReactiveFormsModule, SponsorPanel],
-  selector: 'app-root',
+  selector: 'app-survey',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })

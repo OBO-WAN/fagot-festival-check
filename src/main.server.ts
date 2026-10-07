@@ -1,5 +1,5 @@
 import { BootstrapContext, bootstrapApplication } from '@angular/platform-browser';
-import { App } from './app/app';
+import { AppShell } from './app/app-shell';
 import { config } from './app/app.config.server';
 
-export default (context: BootstrapContext) => bootstrapApplication(App, config, context);
+export default (context: BootstrapContext) => bootstrapApplication(AppShell, config, context);

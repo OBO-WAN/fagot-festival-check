@@ -1,0 +1,85 @@
+<header class="dashboard-header">
+  <span class="brand-mark" aria-hidden="true">III</span>
+  <div><strong>Festival Internacional de Fagot</strong><span>Panel privado de organización</span></div>
+  <a routerLink="/">Volver al cuestionario</a>
+</header>
+<main class="dashboard-shell">
+  @if (account()) {
+    <div class="account-bar"><span>{{ account() }}</span><button type="button" class="quiet-button" [disabled]="authBusy()" (click)="logout()">Cerrar sesión</button></div>
+  }
+  @if (view() === 'signed-out') {
+    <section class="login-panel" aria-labelledby="login-title">
+      <p class="eyebrow">ACCESO DE ORGANIZACIÓN</p>
+      <h1 id="login-title">Tus respuestas, en un solo lugar.</h1>
+      <p>Inicia sesión con tu cuenta de organización para consultar las respuestas del festival.</p>
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <label for="organizer-email">Correo de acceso</label>
+        <input id="organizer-email" type="email" autocomplete="username" formControlName="email" maxlength="254" required />
+        <label for="organizer-password">Contraseña</label>
+        <input id="organizer-password" type="password" autocomplete="current-password" formControlName="password" required />
+        @if (loginForm.touched && loginForm.invalid) { <p class="error-message" role="alert">Introduce tu correo y contraseña.</p> }
+        @if (message()) { <p class="error-message" role="alert">{{ message() }}</p> }
+        <button class="primary-button" type="submit" [disabled]="authBusy() || !available">{{ authBusy() ? 'Iniciando sesión…' : 'Iniciar sesión' }}</button>
+      </form>
+    </section>
+  } @else if (view() === 'checking') {
+    <p class="loading-message" role="status">Comprobando el acceso y cargando las respuestas…</p>
+  } @else if (view() === 'forbidden') {
+    <section class="empty-state"><h1>Esta cuenta no tiene acceso.</h1><p>El panel está reservado a la cuenta de organización autorizada.</p></section>
+  } @else if (view() === 'error') {
+    <section class="empty-state"><h1>No se pudo abrir el panel.</h1><p class="error-message" role="alert">{{ message() }}</p><button type="button" class="primary-button" (click)="refresh()">Volver a intentar</button></section>
+  } @else {
+    <div class="page-heading"><div><p class="eyebrow">CUESTIONARIO DEL FESTIVAL</p><h1>Respuestas recibidas</h1></div><button type="button" class="quiet-button" (click)="refresh()">Actualizar</button></div>
+    <div class="summary-grid" aria-label="Resumen de las respuestas">
+      <div class="summary-card"><strong>{{ responses().length }}</strong><span>Respuestas recibidas</span></div>
+      <div class="summary-card"><strong>{{ difficultyCount() }}</strong><span>Respuestas con dificultad para tocar</span></div>
+      <div class="summary-card"><strong>{{ accessoryCount() }}</strong><span>Respuestas que solicitan accesorios</span></div>
+    </div>
+    <div class="view-toolbar">
+      <div class="view-tabs" role="group" aria-label="Vista de las respuestas">
+        <button type="button" [attr.aria-pressed]="tab() === 'responses'" (click)="tab.set('responses')">Respuestas</button>
+        <button type="button" [attr.aria-pressed]="tab() === 'materials'" (click)="tab.set('materials')">Materiales</button>
+      </div>
+      <button type="button" class="quiet-button" [disabled]="responses().length === 0" (click)="exportCsv(tab())">Exportar {{ tab() === 'responses' ? 'respuestas' : 'materiales' }} (CSV)</button>
+    </div>
+    @if (responses().length === 0) {
+      <section class="empty-state"><h2>Aún no hay respuestas.</h2><p>Los nuevos envíos aparecerán aquí al actualizar el panel.</p></section>
+    } @else if (tab() === 'responses') {
+      <p class="section-note">Abre una respuesta para ver todos sus detalles. Las fechas se muestran en la hora local de este dispositivo.</p>
+      <section aria-label="Respuestas del cuestionario" class="response-list">
+        @for (row of responses(); track row.id) {
+          <details class="response-row">
+            <summary>
+              <span class="response-name"><strong>{{ row.name || 'Nombre no indicado' }}</strong><span>{{ row.system }} · {{ row.model || 'Modelo no indicado' }}</span></span>
+              <span class="playability" [class.difficult]="row.playability === 'Con dificultad'" [class.cannot-play]="row.playability === 'No'">{{ row.playability === 'Sí' ? 'Sí puede tocar' : row.playability === 'No' ? 'No puede tocar' : row.playability || 'Sin indicar' }}</span>
+              <time [attr.datetime]="row.createdAt">{{ row.createdAt | date:'dd/MM/yyyy HH:mm' }}</time>
+            </summary>
+            <dl class="response-details">
+              <dt>Nombre</dt><dd>{{ row.name || '—' }}</dd>
+              <dt>Correo electrónico</dt><dd>{{ row.email || '—' }}</dd>
+              <dt>Sistema de fagot</dt><dd>{{ row.system || '—' }}</dd>
+              <dt>Marca y modelo</dt><dd>{{ row.model || '—' }}</dd>
+              <dt>Propiedad</dt><dd>{{ row.ownership || '—' }}</dd>
+              <dt>Accesorios solicitados</dt><dd>@if (row.accessories.length) { <ul>@for (item of row.accessories; track $index) { <li>{{ item.request }}: {{ item.item }} · {{ item.quantity === null ? 'Cantidad no indicada' : 'Cantidad: ' + item.quantity }}</li> }</ul> } @else { No solicitó accesorios }</dd>
+              <dt>Detalles de accesorios</dt><dd class="preserve-lines">{{ row.accessoryDetails || '—' }}</dd>
+              <dt>Problemas indicados</dt><dd>@if (row.issues.length) { <ul>@for (issue of row.issues; track $index) { <li>{{ issue }}</li> }</ul> } @else { No indicó problemas }</dd>
+              <dt>Descripción</dt><dd class="preserve-lines">{{ row.issueDescription || '—' }}</dd>
+              <dt>Puede tocar una clase</dt><dd>{{ row.playability || '—' }}</dd>
+              <dt>Fecha de envío</dt><dd>{{ row.createdAt | date:'dd/MM/yyyy HH:mm' }}</dd>
+              <dt>Referencia</dt><dd class="reference">{{ row.id }}</dd>
+            </dl>
+          </details>
+        }
+      </section>
+    } @else {
+      <p class="section-note">Compra y préstamo: unidades solicitadas. Asesoramiento: número de solicitudes.</p>
+      @if (materials().length === 0) {
+        <section class="empty-state"><h2>No se han solicitado accesorios.</h2></section>
+      } @else {
+        <div class="table-scroll"><table><caption class="sr-only">Totales de accesorios de todas las respuestas recibidas</caption><thead><tr><th scope="col">Accesorio</th><th scope="col">Comprar</th><th scope="col">Préstamo</th><th scope="col">Asesoramiento</th>@if (unclassifiedCount()) { <th scope="col">Sin clasificar</th> }</tr></thead><tbody>@for (row of materials(); track row.item) { <tr><th scope="row">{{ row.item }}</th><td>{{ row.buy }}</td><td>{{ row.borrow }}</td><td>{{ row.advice }}</td>@if (unclassifiedCount()) { <td>{{ row.unclassified }}</td> }</tr> }</tbody></table></div>
+        @if (unclassifiedCount()) { <p class="section-note">Hay {{ unclassifiedCount() }} solicitudes con un tipo o cantidad no reconocidos. Consulta sus detalles en la vista de respuestas.</p> }
+      }
+    }
+    <p class="dashboard-note">Los totales incluyen cada envío recibido, también si una persona ha enviado más de una respuesta. El panel muestra una copia de los datos del momento de la última actualización.</p>
+  }
+</main>
