@@ -1,0 +1,24 @@
+name: Organizer dashboard checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  organizer-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --watch=false
+      - run: npm run test:db
+      - run: node --test supabase/functions/notify-festival-submission/index.test.mjs
+      - run: npm run build -- --base-href /
